@@ -14,13 +14,13 @@ validate $? "Installing MongoDB server"
 systemctl enable mongod &>>$LOGS_FILE
 validate $? "Enable MongoDB"
 
-systemctl start mongod
+systemctl start mongod &>>$LOGS_FILE
 validate $? "Start MongoDB"
 
 sed -i 's/127.0.0.1/0.0.0.0/g' /etc/mongod.conf
 validate $? "Allowing remote connections"
 
-systemctl restart mongod
+systemctl restart mongod &>>$LOGS_FILE
 validate $? "Restarted MongoDB"
 
 print_total_time
