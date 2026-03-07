@@ -11,6 +11,9 @@ LOGS_FILE="$LOGS_FOLDER/$0.log"
 
 START_TIME=$(date +%s)
 
+mkdir -p $LOGS_FOLDER
+
+
 echo " $(date "+%Y-%m-%d %H:%M:%S") | script started executing at: $(date)" | tee -a $LOGS_FILE
 
 USER_ID=$(id -u)
@@ -22,7 +25,7 @@ check_root(){
    fi
 }
 
-mkdir -p $LOGS_FOLDER
+
 
 validate(){
     if [ $1 -ne 0 ]; then 
