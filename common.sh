@@ -8,13 +8,15 @@ N="\e[0m"
 RID=$(id -u)
 LOGS_FOLDER="/var/log/shell-script"
 LOGS_FILE="$LOGS_FOLDER/$0.log"
+MONGODB_HOST="mongodb.praws.online"
+SCRIPT_DIR=$PWD
 
 START_TIME=$(date +%s)
 
 mkdir -p $LOGS_FOLDER
 
-
-echo " $(date "+%Y-%m-%d %H:%M:%S") | script started executing at: $(date)" | tee -a $LOGS_FILE
+DATE=$(date "+%Y-%m-%d %H:%M:%S") 
+echo " $DATE | script started executing at: $DATE" | tee -a $LOGS_FILE
 
 USER_ID=$(id -u)
 check_root(){
@@ -51,12 +53,20 @@ nodejs_setup(){
 }
 
 app_setup(){
-
+   #creating system user
+   id roboshop &>>$LOGS_FILE
+   if [ $? -ne 0 ]; then
+       useradd --system --home /app --shell /sbin/nologin --comment "roboshop system user" roboshop &>>$LOGS_FILE
+       VALIDATE $? "Creating system user"
+   else
+        echo -e "Roboshop user already exist ... $Y SKIPPING $N"
+   fi
+   #App setup 
    mkdir -p /app 
    VALIDATE $? "Creating app directory"
 
-   curl -o /tmp/catalogue.zip https://roboshop-artifacts.s3.amazonaws.com/catalogue-v3.zip  &>>$LOGS_FILE
-   VALIDATE $? "Downloading catalogue code"
+   curl -o /tmp/$app_name.zip https://roboshop-artifacts.s3.amazonaws.com/$app_name-v3.zip  &>>$LOGS_FILE
+   VALIDATE $? "Downloading $app_name code"
 
    cd /app
    VALIDATE $? "Moving to app directory"
@@ -64,16 +74,29 @@ app_setup(){
    rm -rf /app/*
    VALIDATE $? "Removing existing code"
 
-   unzip /tmp/catalogue.zip &>>$LOGS_FILE
-   VALIDATE $? "Uzip catalogue code"
-
+   unzip /tmp/$app_name.zip &>>$LOGS_FILE
+   VALIDATE $? "Uzip $app_name code"
 
 }
 
+systemd_setup(){
+    cp $SCRIPT_DIR/$app_name.service /etc/systemd/system/$app_name.service
+    VALIDATE $? "Created systemctl service"
+
+    systemctl daemon-reload
+    systemctl enable $app_name  &>>$LOGS_FILE
+    systemctl start $app_name
+    VALIDATE $? "Starting and enabling $app_name"
+}
+
+app_restart(){
+    systemctl restart $app_name
+    VALIDATE $? "Restarting $app_name"
+}
 
 print_total_time(){
     END_TIME=$(date +%S)
     TOTAL_TIME=$(( $END_TIME - $START_TIME ))
-    echo -e " $(date "+%Y-%m-%d %H:%M:%S") | Script execute in: $GREEN $TOTALTIME Seconds $N " | tee -a $LOGS_FILE
+    echo -e " $DATE | Script execute in: $GREEN $TOTALTIME Seconds $N " | tee -a $LOGS_FILE
 }
 
