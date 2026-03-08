@@ -10,7 +10,9 @@ systemd_setup
 
 # Loading data into MongoDB
 cp $SCRIPT_DIR/mongo.repo /etc/yum.repos.d/mongo.repo
+VALIDATE $? "Loading mongo"
 dnf install mongodb-mongosh -y &>>$LOGS_FILE
+VALIDATE $? "installing mongo"
 
 INDEX=$(mongosh --host $MONGODB_HOST --quiet  --eval 'db.getMongo().getDBNames().indexOf("catalogue")')
 
