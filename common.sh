@@ -52,6 +52,16 @@ nodejs_setup(){
     VALIDATE $? "Installing dependencies"
 }
 
+java_setup(){
+   dnf install maven -y &>>$LOGS_FILE
+   VALIDATE $? "Installing Maven"
+   cd /app 
+   mvn clean package &>>$LOGS_FILE
+   VALIDATE $? "Installing and Building $app_name"
+   mv target/$app_name-1.0.jar $app_name.jar 
+   VALIDATE $? "Moving and Renaming $app_name"
+}
+
 app_setup(){
    #creating system user
    id roboshop &>>$LOGS_FILE
@@ -93,6 +103,8 @@ app_restart(){
     systemctl restart $app_name
     VALIDATE $? "Restarting $app_name"
 }
+
+
 
 print_total_time(){
     END_TIME=$(date +%s)
