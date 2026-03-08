@@ -21,5 +21,4 @@ else
     echo -e "$DATE | Products already loaded ... $Y SKIPPING $N"
 fi
 
-app_restart
 
