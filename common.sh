@@ -96,7 +96,7 @@ app_restart(){
 
 print_total_time(){
     END_TIME=$(date +%S)
-    TOTAL_TIME=$(( $END_TIME - $START_TIME ))
+    TOTAL_TIME=$(( $START_TIME - $END_TIME ))
     echo -e " $DATE | Script execute in: $GREEN $TOTALTIME Seconds $N " | tee -a $LOGS_FILE
 }
 
