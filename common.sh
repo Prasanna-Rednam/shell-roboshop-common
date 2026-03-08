@@ -8,7 +8,7 @@ N="\e[0m"
 RID=$(id -u)
 LOGS_FOLDER="/var/log/shell-script"
 LOGS_FILE="$LOGS_FOLDER/$0.log"
-MONGODB_HOST=mongodb.praws.online
+MONGODB_HOST=mongodb.paws-88s.online
 SCRIPT_DIR=$PWD
 
 START_TIME=$(date +%s)
